@@ -1,0 +1,21 @@
+{
+  "name": "neo-brutalism-text-to-image",
+  "version": "1.0.0",
+  "description": "Neo-Brutalism Text to Image generator using Pollinations AI",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx -y serve .",
+    "dev": "npx -y serve ."
+  },
+  "keywords": [
+    "text-to-image",
+    "pollinations-ai",
+    "neo-brutalism",
+    "ai-art"
+  ],
+  "author": "Zakaria",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

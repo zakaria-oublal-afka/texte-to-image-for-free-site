@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEO-GEN AI | Clean Text-to-Image</title>
+  <meta name="description" content="Générateur d'images IA minimaliste et performant en style Neo-Brutalism.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎨</text></svg>">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- MINIMALIST HEADER WITH PAGE TABS -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon">🎨</div>
+        <h1 class="brand-title">NEO-GEN</h1>
+        <span class="brand-badge">POLLINATIONS</span>
+      </div>
+
+      <!-- MAIN PAGE TABS -->
+      <nav class="nav-tabs">
+        <button id="tabCreateBtn" class="nav-tab active">
+          🎨 CRÉATEUR
+        </button>
+        <button id="tabGalleryBtn" class="nav-tab">
+          📚 GALERIE <span id="galleryCountBadge" class="tab-badge">0</span>
+        </button>
+        <button id="themeToggleBtn" class="btn btn-sm btn-icon-only" title="Changer de thème">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- VIEW 1: CREATOR PAGE (IMAGE TOP + CONTROL DOCK BOTTOM) -->
+    <div id="createView" class="view-section active">
+
+      <!-- TOP: MAIN IMAGE DISPLAY CANVAS -->
+      <section class="image-stage-container">
+        
+        <div class="canvas-wrapper" id="canvasContainer">
+          
+          <!-- Placeholder State -->
+          <div class="placeholder-box" id="placeholderState">
+            <div class="placeholder-icon">✨</div>
+            <h2 class="placeholder-text">VOTRE CRÉATION APPARAÎTRA ICI</h2>
+            <p class="placeholder-sub">Écrivez une idée dans la barre ci-dessous et cliquez sur <strong>Générer</strong>.</p>
+          </div>
+
+          <!-- Loading State -->
+          <div class="loading-box" id="loadingState">
+            <div class="spinner-brutal"></div>
+            <div class="loading-status-text" id="loadingStatusText">Génération en cours...</div>
+          </div>
+
+          <!-- Generated Image Result -->
+          <img id="resultImage" class="result-image" alt="Image Générée Par IA" />
+
+        </div>
+
+        <!-- Floating Image Actions Bar -->
+        <div class="stage-actions" id="stageActions" style="display: none;">
+          <span class="badge" id="metaRatio">1024x1024</span>
+          <span class="badge" id="metaModel">FLUX</span>
+          <div style="margin-left: auto; display: flex; gap: 0.5rem;">
+            <button id="downloadBtn" class="btn btn-accent btn-sm">📥 Télécharger</button>
+            <button id="copyUrlBtn" class="btn btn-secondary btn-sm">🔗 Copier Lien</button>
+            <button id="fullscreenBtn" class="btn btn-sm">🔍 Plein Écran</button>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- BOTTOM: UNIFIED RECTANGULAR CONTROL DOCK BAR -->
+      <section class="control-dock">
+        
+        <!-- Main Bar Row -->
+        <div class="dock-main-row">
+          
+          <!-- Prompt Input Field -->
+          <div class="dock-prompt-wrapper">
+            <input type="text" id="promptInput" class="dock-prompt-input" placeholder="Décrivez l'image que vous voulez créer (ex: A cyberpunk cat in Tokyo neon rain)..." />
+            <button id="randomPromptBtn" class="dock-action-icon" title="Surprise Me (Prompt Aléatoire)">🎲</button>
+            <button id="clearPromptBtn" class="dock-action-icon" title="Effacer le texte">❌</button>
+          </div>
+
+          <!-- Quick Settings Toggle Button -->
+          <button id="toggleSettingsBtn" class="btn btn-secondary dock-btn">
+            ⚙️ REGLAGES <span id="settingsBadge" class="mini-badge">1:1</span>
+          </button>
+
+          <!-- Main Generate Button -->
+          <button id="generateBtn" class="btn btn-primary btn-lg dock-btn-generate">
+            🚀 GÉNÉRER
+          </button>
+
+        </div>
+
+        <!-- Collapsible Settings Panel -->
+        <div id="settingsPanel" class="settings-popover">
+          
+          <div class="settings-grid">
+            
+            <!-- Dimensions Ratio -->
+            <div class="form-group">
+              <label class="form-label">DIMENSIONS / RATIO</label>
+              <div class="ratio-grid">
+                <button class="ratio-btn active" data-ratio="1:1" data-w="1024" data-h="1024">1:1 Carré</button>
+                <button class="ratio-btn" data-ratio="16:9" data-w="1280" data-h="720">16:9 Paysage</button>
+                <button class="ratio-btn" data-ratio="9:16" data-w="720" data-h="1280">9:16 Mobile</button>
+                <button class="ratio-btn" data-ratio="4:3" data-w="1024" data-h="768">4:3 Standard</button>
+                <button class="ratio-btn" data-ratio="custom">Custom</button>
+              </div>
+
+              <!-- Custom Dimensions Inputs -->
+              <div id="customDimensions" class="dimensions-inputs" style="display: none;">
+                <input type="number" id="customWidth" class="input-number" value="1024" min="256" max="2048" placeholder="Largeur W">
+                <input type="number" id="customHeight" class="input-number" value="1024" min="256" max="2048" placeholder="Hauteur H">
+              </div>
+            </div>
+
+            <!-- AI Engine Model -->
+            <div class="form-group">
+              <label class="form-label" for="modelSelect">MODÈLE IA</label>
+              <select id="modelSelect" class="select-input">
+                <option value="flux" selected>⚡ Flux (Haute Qualité)</option>
+                <option value="flux-realism">📸 Flux Realism (Photo)</option>
+                <option value="flux-anime">🌸 Flux Anime (Manga)</option>
+                <option value="flux-3d">🧊 Flux 3D (Render)</option>
+                <option value="turbo">🚀 Turbo (Ultra Rapide)</option>
+              </select>
+            </div>
+
+            <!-- Style Presets -->
+            <div class="form-group">
+              <label class="form-label">STYLE PRESETS</label>
+              <div class="style-presets-grid">
+                <button class="style-card active" data-style="none">✨ Aucun</button>
+                <button class="style-card" data-style="neo-brutalist">⚡ Neo-Brutalism</button>
+                <button class="style-card" data-style="anime">🌸 Anime</button>
+                <button class="style-card" data-style="cyberpunk">🌃 Cyberpunk</button>
+                <button class="style-card" data-style="photorealistic">📸 Realistic</button>
+                <button class="style-card" data-style="3d-render">🎲 3D Render</button>
+              </div>
+            </div>
+
+            <!-- Enhance Toggle & Seed -->
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" id="enhanceToggle" class="toggle-checkbox" checked>
+                <span class="form-label" style="margin:0;">✨ Auto-Enhance</span>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <input type="number" id="seedInput" class="input-number" placeholder="Seed (Auto)" style="width: 120px;">
+                <button id="randomSeedBtn" class="btn btn-secondary btn-sm" type="button">🎲</button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <!-- VIEW 2: HISTORIQUE / GALERIE PAGE -->
+    <div id="galleryView" class="view-section" style="display: none;">
+      
+      <div class="panel">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border-bottom: 3px dashed var(--border-color); padding-bottom: 1rem;">
+          <h2 class="panel-title" style="border:none; padding:0; margin:0;">📚 HISTORIQUE DES IMAGES</h2>
+          <button id="clearHistoryBtn" class="btn btn-sm" style="background: var(--neo-pink); color:#fff;">
+            🗑️ EFFACER TOUTE LA GALERIE
+          </button>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid" style="margin-top: 1.5rem;">
+          <!-- Gallery cards generated dynamically in app.js -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      NEO-GEN AI • STREAMLINED INTERFACE • POWERED BY <a href="https://pollinations.ai" target="_blank" rel="noopener">POLLINATIONS.AI</a>
+    </footer>
+
+  </div>
+
+  <!-- LIGHTBOX / FULLSCREEN MODAL -->
+  <div class="modal-overlay" id="imageModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span style="font-weight: 900;" id="modalPromptTitle">IMAGE HAUTE DÉFINITION</span>
+        <button id="closeModalBtn" class="btn btn-sm" style="background: var(--neo-pink); color:#fff;">❌ FERMER</button>
+      </div>
+      <div class="modal-body">
+        <img id="modalImage" class="modal-image" src="" alt="Zoom Image">
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- APP SCRIPT -->
+  <script src="app.js"></script>
+</body>
+</html>
